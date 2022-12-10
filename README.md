@@ -9,3 +9,4 @@ Prof.José Carlos Macoratti <br>
 Tópicos do curso
 
 - Seção 1: NET6 - Projeto ASP.NET Core MVC Introdução
+- Seção 2: NET 6 - Projeto ASP .NET Core MVC - Site para venda de Lanches
