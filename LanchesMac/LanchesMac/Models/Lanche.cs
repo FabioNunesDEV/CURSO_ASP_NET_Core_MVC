@@ -44,10 +44,10 @@ public class Lanche
     [StringLength(200, ErrorMessage = "O {0} deve ter no máximo {1} caracters ")]
     public string ImagemThumbnailUrl { get; set; }
 
-    [Display(Name = "Preferido ?")]
+    [Display(Name = "Preferido")]
     public bool IsLanchePreferido { get; set; }
 
-    [Display(Name = "Em estoque ?")]
+    [Display(Name = "Estoque")]
     public bool EmEstoque { get; set; }
 
     // Relacionamento com Categoria
