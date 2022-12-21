@@ -16,6 +16,11 @@ public class LancheController : Controller
     public IActionResult List()
     {
         var lanches = _lancheRepository.Lanches;
+
+        ViewBag.titulo = "Todos os lanches";
+        ViewBag.totalLabel = "Total de lanches :";
+        ViewBag.total = lanches.Count();
+        ViewBag.data = DateTime.Now;
         return View(lanches);
     }
 }
