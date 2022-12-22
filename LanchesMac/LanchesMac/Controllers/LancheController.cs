@@ -1,4 +1,5 @@
 ﻿using LanchesMac.Repositories.Interfaces;
+using LanchesMac.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.InteropServices;
 
@@ -15,12 +16,14 @@ public class LancheController : Controller
 
     public IActionResult List()
     {
-        var lanches = _lancheRepository.Lanches;
+        //var lanches = _lancheRepository.Lanches;
 
-        ViewBag.titulo = "Todos os lanches";
-        ViewBag.totalLabel = "Total de lanches :";
-        ViewBag.total = lanches.Count();
-        ViewBag.data = DateTime.Now;
-        return View(lanches);
+        //return View(lanches);
+
+        var lanchesListViewModel = new LancheListViewModel();
+        lanchesListViewModel.Lanches = _lancheRepository.Lanches;
+        lanchesListViewModel.CategoriaAtual = "Categoria atual";
+        return View(lanchesListViewModel);
+
     }
 }
