@@ -12,6 +12,4 @@ public class CarrinhoCompraItem
 
     [StringLength(200)]
     public string CarrinhoCompraId { get; set; }
-
-
 }
