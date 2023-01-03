@@ -15,7 +15,7 @@ public class CarrinhoCompra
     public string CarrinhoCompraId { get; set; }
     public List<CarrinhoCompraItem> CarrinhoCompraItems { get; set; }
 
-    public static CarrinhoCompra GetCarrinho (IServiceProvider services)
+    public static CarrinhoCompra GetCarrinho(IServiceProvider services)
     {
         // define uma sessão
         ISession session = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext.Session;
@@ -24,7 +24,7 @@ public class CarrinhoCompra
         var context = services.GetService<AppDbContext>();
 
         // obtem ou gera o Id do carrinho
-        string carrinhoId = session.GetString("CarrinhoId")??Guid.NewGuid().ToString();
+        string carrinhoId = session.GetString("CarrinhoId") ?? Guid.NewGuid().ToString();
 
         // retorna o carrinho com o contexto e o Id atribuido ou obtido
         return new CarrinhoCompra(context)
@@ -32,5 +32,26 @@ public class CarrinhoCompra
             CarrinhoCompraId = carrinhoId
         };
 
+    }
+
+    public void AdicionarAoCarrinho(Lanche lanche)
+    {
+        var carrinhoCompraItem = _context.CarrinhoCompraItens.SingleOrDefault(s => s.Lanche.LancheId == lanche.LancheId && s.CarrinhoCompraId == CarrinhoCompraId);
+
+        if (carrinhoCompraItem == null)
+        {
+            carrinhoCompraItem = new CarrinhoCompraItem
+            {
+                CarrinhoCompraId = CarrinhoCompraId,
+                Lanche = lanche,
+                Quantidade =1
+            };
+            _context.CarrinhoCompraItens.Add(carrinhoCompraItem);
+        }
+        else
+        {
+            carrinhoCompraItem.Quantidade++;
+        }
+        _context.SaveChanges();
     }
 }
