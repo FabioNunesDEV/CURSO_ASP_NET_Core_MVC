@@ -2,28 +2,36 @@
 using LanchesMac.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LanchesMac.Components;
-
-public class CarrinhoCompraResumo:ViewComponent
+namespace LanchesMac.Components
 {
-    private readonly CarrinhoCompra _carrinhoCompra;
-
-    public CarrinhoCompraResumo(CarrinhoCompra carrinhoCompra)
+    public class CarrinhoCompraResumo : ViewComponent
     {
-        _carrinhoCompra = carrinhoCompra;
-    }
+        private readonly CarrinhoCompra _carrinhoCompra;
 
-    public IViewComponentResult Invoke()
-    {
-        var itens = _carrinhoCompra.GetCarrinhoCompraItems();
-        _carrinhoCompra.CarrinhoCompraItems = itens;
-
-        var carrinhoCompraVM = new CarrinhoCompraViewModel
+        public CarrinhoCompraResumo(CarrinhoCompra carrinhoCompra)
         {
-            CarrinhoCompra = _carrinhoCompra,
-            CarrinhoCompraTotal = _carrinhoCompra.GetCarrinhoCompraTotal()
-        };
+            _carrinhoCompra = carrinhoCompra;
+        }
 
-        return View(carrinhoCompraVM);
+        public IViewComponentResult Invoke()
+        {
+            var itens = _carrinhoCompra.GetCarrinhoCompraItens();
+
+            //var itens = new List<CarrinhoCompraItem>()
+            //{
+            //    new CarrinhoCompraItem(),
+            //    new CarrinhoCompraItem()
+            //};
+
+            _carrinhoCompra.CarrinhoCompraItems = itens;
+
+            var carrinhoCompraVM = new CarrinhoCompraViewModel
+            {
+                CarrinhoCompra = _carrinhoCompra,
+                CarrinhoCompraTotal = _carrinhoCompra.GetCarrinhoCompraTotal()
+            };
+
+            return View(carrinhoCompraVM);
+        }
     }
 }

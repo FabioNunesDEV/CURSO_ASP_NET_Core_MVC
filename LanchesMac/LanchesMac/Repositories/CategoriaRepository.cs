@@ -2,16 +2,17 @@
 using LanchesMac.Models;
 using LanchesMac.Repositories.Interfaces;
 
-namespace LanchesMac.Repositories;
-
-public class CategoriaRepository : ICategoriaRepository
+namespace LanchesMac.Repositories
 {
-    private readonly AppDbContext _context;
-
-    public CategoriaRepository(AppDbContext context)
+    public class CategoriaRepository : ICategoriaRepository
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public IEnumerable<Categoria> Categorias => _context.Categorias;
+        public CategoriaRepository(AppDbContext context)
+        {
+            _context = context; 
+        }
+
+        public IEnumerable<Categoria> Categorias => _context.Categorias;
+    }
 }

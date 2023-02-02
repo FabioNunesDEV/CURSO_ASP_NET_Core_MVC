@@ -2,56 +2,55 @@
 using LanchesMac.Repositories.Interfaces;
 using LanchesMac.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Packaging.Signing;
 
-namespace LanchesMac.Controllers;
-
-public class CarrinhoCompraController : Controller
+namespace LanchesMac.Controllers
 {
-    private readonly ILancheRepository _lancheRepository;
-    private readonly CarrinhoCompra _carrinhoCompra;
-
-    public CarrinhoCompraController(ILancheRepository lancheRepository, CarrinhoCompra carrinhoCompra)
+    public class CarrinhoCompraController : Controller
     {
-        _lancheRepository = lancheRepository;
-        _carrinhoCompra = carrinhoCompra;
-    }
+        private readonly ILancheRepository _lancheRepository;
+        private readonly CarrinhoCompra _carrinhoCompra;
 
-    public IActionResult Index()
-    {
-        var itens = _carrinhoCompra.GetCarrinhoCompraItems();
-        _carrinhoCompra.CarrinhoCompraItems = itens;
-
-        var carrinhoCompraVM = new CarrinhoCompraViewModel
+        public CarrinhoCompraController(ILancheRepository lancheRepository, 
+            CarrinhoCompra carrinhoCompra)
         {
-            CarrinhoCompra = _carrinhoCompra,
-            CarrinhoCompraTotal = _carrinhoCompra.GetCarrinhoCompraTotal()
-        };
-
-        return View(carrinhoCompraVM);
-    }
-
-    public IActionResult AdicionarItemCarrinhoCompra (int lancheId)
-    {
-        var lancheSelecionado = _lancheRepository.Lanches.FirstOrDefault(p => p.LancheId == lancheId);
-
-        if (lancheSelecionado != null)
-        {
-            _carrinhoCompra.AdicionarAoCarrinho(lancheSelecionado);
+            _lancheRepository = lancheRepository;
+            _carrinhoCompra = carrinhoCompra;
         }
 
-        return RedirectToAction("index");
-    }
-
-    public IActionResult RemoverItemCarrinhoCompra(int lancheId)
-    {
-        var lancheSelecionado = _lancheRepository.Lanches.FirstOrDefault(p => p.LancheId == lancheId);
-
-        if (lancheSelecionado != null)
+        public IActionResult Index()
         {
-            _carrinhoCompra.RemoverDoCarrinho(lancheSelecionado);
+            var itens = _carrinhoCompra.GetCarrinhoCompraItens();
+            _carrinhoCompra.CarrinhoCompraItems = itens;
+
+            var carrinhoCompraVM = new CarrinhoCompraViewModel
+            {
+                CarrinhoCompra = _carrinhoCompra,
+                CarrinhoCompraTotal = _carrinhoCompra.GetCarrinhoCompraTotal()
+            };
+
+            return View(carrinhoCompraVM);
+        }
+        public IActionResult AdicionarItemNoCarrinhoCompra(int lancheId)
+        {
+            var lancheSelecionado = _lancheRepository.Lanches.FirstOrDefault(p=> p.LancheId == lancheId); 
+
+            if(lancheSelecionado != null)
+            {
+                _carrinhoCompra.AdicionarAoCarrinho(lancheSelecionado);
+            }
+            return RedirectToAction("Index");
         }
 
-        return RedirectToAction("index");
+        public IActionResult RemoverItemDoCarrinhoCompra(int lancheId)
+        {
+            var lancheSelecionado = _lancheRepository.Lanches
+                                    .FirstOrDefault(p => p.LancheId == lancheId);
+
+            if (lancheSelecionado != null)
+            {
+                _carrinhoCompra.RemoverDoCarrinho(lancheSelecionado);
+            }
+            return RedirectToAction("Index");
+        }
     }
 }
