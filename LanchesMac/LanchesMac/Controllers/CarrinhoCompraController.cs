@@ -20,7 +20,7 @@ namespace LanchesMac.Controllers
         public IActionResult Index()
         {
             var itens = _carrinhoCompra.GetCarrinhoCompraItens();
-            _carrinhoCompra.CarrinhoCompraItems = itens;
+            _carrinhoCompra.CarrinhoCompraItens = itens;
 
             var carrinhoCompraVM = new CarrinhoCompraViewModel
             {

@@ -23,7 +23,7 @@ namespace LanchesMac.Components
             //    new CarrinhoCompraItem()
             //};
 
-            _carrinhoCompra.CarrinhoCompraItems = itens;
+            _carrinhoCompra.CarrinhoCompraItens = itens;
 
             var carrinhoCompraVM = new CarrinhoCompraViewModel
             {
