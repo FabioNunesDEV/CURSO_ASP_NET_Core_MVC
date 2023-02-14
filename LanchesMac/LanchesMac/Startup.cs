@@ -19,7 +19,7 @@ public class Startup
     {
         services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+        services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
         services.Configure<IdentityOptions>(options =>
         {
@@ -37,11 +37,11 @@ public class Startup
         services.AddTransient<IPedidoRepository, PedidoRepository>();
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        
+
         services.AddScoped(sp => CarrinhoCompra.GetCarrinho(sp));
 
         services.AddControllersWithViews();
-        
+
         services.AddMemoryCache();
         services.AddSession();
 
@@ -62,16 +62,21 @@ public class Startup
 
         app.UseStaticFiles();
         app.UseRouting();
-       
+
         app.UseSession();
 
         app.UseAuthentication();
         app.UseAuthorization();
-        
+
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
         {
+            endpoints.MapControllerRoute(
+              name: "areas",
+              pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}"
+            );
+
             endpoints.MapControllerRoute(
                name: "categoriaFiltro",
                pattern: "Lanche/{action}/{categoria?}",
