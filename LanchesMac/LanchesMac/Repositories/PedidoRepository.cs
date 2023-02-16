@@ -2,39 +2,40 @@
 using LanchesMac.Models;
 using LanchesMac.Repositories.Interfaces;
 
-namespace LanchesMac.Repositories;
-
-public class PedidoRepository : IPedidoRepository
+namespace LanchesMac.Repositories
 {
-    private readonly AppDbContext _appDbContext;
-    private readonly CarrinhoCompra _carrinhoCompra;
-    public PedidoRepository (AppDbContext appDbContext, CarrinhoCompra carrinhoCompra)
+    public class PedidoRepository : IPedidoRepository
     {
-        _appDbContext = appDbContext;
-        _carrinhoCompra= carrinhoCompra;
-    }
+        private readonly AppDbContext _appDbContext;
+        private readonly CarrinhoCompra _carrinhoCompra;
 
-    public void CriarPedido(Pedido pedido)
-    {
-        pedido.PedidoEnviado = DateTime.Now;
-        _appDbContext.Pedidos.Add(pedido);  
-        _appDbContext.SaveChanges();
-
-        var carrinhoCompraItens = _carrinhoCompra.CarrinhoCompraItens;
-
-        foreach (var carrinhoItem in carrinhoCompraItens)
+        public PedidoRepository(AppDbContext appDbContext, 
+            CarrinhoCompra carrinhoCompra)
         {
-            var pedidoDetail = new PedidoDetalhe()
-            {
-                Quantidade = carrinhoItem.Quantidade,
-                LancheId = carrinhoItem.Lanche.LancheId,
-                PedidoId = pedido.PedidoId,
-                Preco = carrinhoItem.Lanche.Preco
-            };
-
-            _appDbContext.PedidoDetalhes.Add(pedidoDetail); 
+            _appDbContext = appDbContext;
+            _carrinhoCompra = carrinhoCompra;
         }
 
-        _appDbContext.SaveChanges();
+        public void CriarPedido(Pedido pedido)
+        {
+            pedido.PedidoEnviado = DateTime.Now;
+            _appDbContext.Pedidos.Add(pedido);
+            _appDbContext.SaveChanges();
+
+            var carrinhoCompraItens = _carrinhoCompra.CarrinhoCompraItems;
+
+            foreach (var carrinhoItem in carrinhoCompraItens)
+            {
+                var pedidoDetail = new PedidoDetalhe()
+                {
+                    Quantidade = carrinhoItem.Quantidade,
+                    LancheId = carrinhoItem.Lanche.LancheId,
+                    PedidoId = pedido.PedidoId,
+                    Preco = carrinhoItem.Lanche.Preco
+                };
+                _appDbContext.PedidoDetalhes.Add(pedidoDetail); 
+            }
+            _appDbContext.SaveChanges();
+        }
     }
 }

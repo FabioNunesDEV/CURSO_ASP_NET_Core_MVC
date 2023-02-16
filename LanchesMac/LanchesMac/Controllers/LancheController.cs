@@ -25,7 +25,18 @@ namespace LanchesMac.Controllers
             }
             else
             {
-
+                //if (string.Equals("Normal", categoria, StringComparison.OrdinalIgnoreCase))
+                //{
+                //    lanches = _lancheRepository.Lanches
+                //        .Where(l => l.Categoria.CategoriaNome.Equals("Normal"))
+                //        .OrderBy(l => l.Nome);
+                //}
+                //else
+                //{
+                //    lanches = _lancheRepository.Lanches
+                //       .Where(l => l.Categoria.CategoriaNome.Equals("Natural"))
+                //       .OrderBy(l => l.Nome);
+                //}
                 lanches = _lancheRepository.Lanches
                           .Where(l => l.Categoria.CategoriaNome.Equals(categoria))
                           .OrderBy(c => c.Nome);
@@ -46,9 +57,9 @@ namespace LanchesMac.Controllers
         {
             var lanche = _lancheRepository.Lanches.FirstOrDefault(l => l.LancheId == lancheId);
             return View(lanche);
-        }
+        }      
 
-        public ViewResult Search (string searchString)
+        public ViewResult Search(string searchString)
         {
             IEnumerable<Lanche> lanches;
             string categoriaAtual = string.Empty;
@@ -60,8 +71,8 @@ namespace LanchesMac.Controllers
             }
             else
             {
-                lanches = _lancheRepository.Lanches
-                            .Where(p => p.Nome.ToLower().Contains(searchString.ToLower()));
+                 lanches = _lancheRepository.Lanches
+                           .Where(p => p.Nome.ToLower().Contains(searchString.ToLower()));
 
                 if (lanches.Any())
                     categoriaAtual = "Lanches";
@@ -73,8 +84,7 @@ namespace LanchesMac.Controllers
             {
                 Lanches = lanches,
                 CategoriaAtual = categoriaAtual
-
             });
         }
-    } 
+    }
 }

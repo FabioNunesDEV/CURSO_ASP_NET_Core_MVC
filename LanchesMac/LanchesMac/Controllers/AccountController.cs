@@ -1,92 +1,102 @@
 ﻿using LanchesMac.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LanchesMac.Controllers;
-
-public class AccountController : Controller
+namespace LanchesMac.Controllers
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
-
-    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+    [Authorize]
+    public class AccountController : Controller
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-    }
+        private readonly UserManager<IdentityUser> _userManager; 
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-    public IActionResult Login(string returnUrl)
-    {
-        return View(new LoginViewModel()
+        public AccountController(UserManager<IdentityUser> userManager, 
+            SignInManager<IdentityUser> signInManager)
         {
-            ReturnUrl = returnUrl
-        });
-    }
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
 
-    [HttpPost]
-    public async Task<IActionResult> Login(LoginViewModel loginVM)
-    {
-        if (!ModelState.IsValid) return View(loginVM);
-
-        var user = await _userManager.FindByNameAsync(loginVM.UserName);
-        if (user != null)
+        [AllowAnonymous]
+        public IActionResult Login(string returnUrl)
         {
-            var result = await _signInManager.PasswordSignInAsync(user, loginVM.Password, false, false);
-            if (result.Succeeded)
+            return View(new LoginViewModel()
             {
-                if (string.IsNullOrEmpty(loginVM.ReturnUrl))
+                ReturnUrl = returnUrl
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel loginVM)
+        {
+            if (!ModelState.IsValid)
+                return View(loginVM);
+
+            var user = await _userManager.FindByNameAsync(loginVM.UserName);
+
+            if (user != null)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user, 
+                    loginVM.Password, false, false);
+
+                if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    if (string.IsNullOrEmpty(loginVM.ReturnUrl))
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    return Redirect(loginVM.ReturnUrl);
                 }
-
-                return Redirect(loginVM.ReturnUrl);
             }
-        }
+            ModelState.AddModelError("", "Falha ao realizar o login!!");
+            return View(loginVM);
+        }//
 
-        ModelState.AddModelError("", "Falha ao realizar o login !!");
-        return View(loginVM);
-    }
-
-    public IActionResult Register()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(LoginViewModel registroVM)
-    {
-        if (ModelState.IsValid)
+        [AllowAnonymous]
+        public IActionResult Register()
         {
-            var user = new IdentityUser { UserName = registroVM.UserName };
-            var result = await _userManager.CreateAsync(user, registroVM.Password);
-
-            if (result.Succeeded)
-            {
-                // await _signInManager.SignInAsync(user, isPersistent, false);
-                await _userManager.AddToRoleAsync(user, "member");
-                return RedirectToAction("Login", "Account");
-            }
-            else
-            {
-                this.ModelState.AddModelError("Registro", "Falha ao registrar o usuário !!");
-            }
+            return View();
         }
 
-        return View(registroVM);
-    }
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(LoginViewModel registroVM)
+        {
+            if(ModelState.IsValid)
+            {
+                var user = new IdentityUser { UserName = registroVM.UserName };
+                var result = await _userManager.CreateAsync(user, registroVM.Password);
 
-    [HttpPost]
-    public async Task<IActionResult> Logout()
-    {
-        HttpContext.Session.Clear();
-        HttpContext.User = null;
-        await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");   
-    }
+                if(result.Succeeded)
+                {
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _userManager.AddToRoleAsync(user, "Member");
+                    return RedirectToAction("Login", "Account");
+                }
+                else
+                {
+                    this.ModelState.AddModelError("Registro", "Falha ao registrar o usuário");
+                }
+            }
+            return View(registroVM);    
+        }
 
-    public IActionResult AccessDenied()
-    {
-        return View();
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear();
+            HttpContext.User = null;
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index","Home");
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

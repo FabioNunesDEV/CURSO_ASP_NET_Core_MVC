@@ -3,6 +3,7 @@ using LanchesMac.Models;
 using LanchesMac.Repositories;
 using LanchesMac.Repositories.Interfaces;
 using LanchesMac.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,46 +19,56 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+        services.AddIdentity<IdentityUser, IdentityRole>()
+             .AddEntityFrameworkStores<AppDbContext>()
+             .AddDefaultTokenProviders();
 
-        services.Configure<IdentityOptions>(options =>
-        {
-            // Regras fracas apenas para os testes.
-            options.Password.RequireDigit = false;
-            options.Password.RequireLowercase = false;
-            options.Password.RequireUppercase = false;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequiredLength = 4;
-            options.Password.RequiredUniqueChars = 0;
-        });
+        //services.Configure<IdentityOptions>(options =>
+        //{
+        //    // Default Password settings.
+        //    options.Password.RequireDigit = false;
+        //    options.Password.RequireLowercase = false;
+        //    options.Password.RequireNonAlphanumeric = false;
+        //    options.Password.RequireUppercase = false;
+        //    options.Password.RequiredLength = 3;
+        //    options.Password.RequiredUniqueChars = 1;
+        //});
 
         services.AddTransient<ILancheRepository, LancheRepository>();
         services.AddTransient<ICategoriaRepository, CategoriaRepository>();
-        services.AddTransient<IPedidoRepository, PedidoRepository>();
-        services.AddScoped<ISeedUserRoleInitial,SeedUserRoleInitial>();
+        services.AddTransient<IPedidoRepository,PedidoRepository>();
+        services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("Admin", politica =>
-            {
-                politica.RequireRole("Admin");
-            });
+            options.AddPolicy("Admin",
+                politica =>
+                {
+                    politica.RequireRole("Admin");
+                });
         });
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
         services.AddScoped(sp => CarrinhoCompra.GetCarrinho(sp));
 
         services.AddControllersWithViews();
-
+        
         services.AddMemoryCache();
-        services.AddSession();
+        //services.AddDistributedMemoryCache();
 
+        services.AddSession();
+        //{
+        //    options.IdleTimeout = TimeSpan.FromSeconds(10);
+        //    options.Cookie.HttpOnly = true;
+        //    options.Cookie.IsEssential = true;
+        //});
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeedUserRoleInitial seedUserRoleInitial)
+    public void Configure(IApplicationBuilder app, 
+        IWebHostEnvironment env, ISeedUserRoleInitial seedUserRoleInitial)
     {
         if (env.IsDevelopment())
         {
@@ -73,22 +84,22 @@ public class Startup
         app.UseStaticFiles();
         app.UseRouting();
 
+        //cria os perfis
         seedUserRoleInitial.SeedRoles();
+        //cria os usuários e atribui ao perfil
         seedUserRoleInitial.SeedUsers();
 
         app.UseSession();
 
         app.UseAuthentication();
         app.UseAuthorization();
-
-        app.UseAuthorization();
+     
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute(
-              name: "areas",
-              pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}"
-            );
+             name: "areas",
+             pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
 
             endpoints.MapControllerRoute(
                name: "categoriaFiltro",
