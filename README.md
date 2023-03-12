@@ -21,3 +21,7 @@ Tópicos do curso
 - Seção 11: NET 6 - Migrando o código da classe Startup para a classe Program
 - Seção 12: NET 6 - Deploy do projeto no IIS
 - Seção 13: NET 6- Gerando relatórios e PDF usando o FastRepot OpenSource
+
+Certificado conclusão do curso<br>
+
+<img align="center" alt="Dev-HTML" height="500em" src="https://github.com/FabioNunesDEV/CURSO_ASP_NET_Core_MVC/blob/main/Certificado/MVP_COMPLETO_NET6.jpg">
